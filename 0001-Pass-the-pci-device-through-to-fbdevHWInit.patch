@@ -1,0 +1,39 @@
+From b54f27f0de0558880b2146a4315a99907eb72249 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Mon, 11 Aug 2014 12:29:28 -0400
+Subject: [PATCH] Pass the pci device through to fbdevHWInit
+
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+---
+ src/glint_driver.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/glint_driver.c b/src/glint_driver.c
+index aa78516..019a2f1 100644
+--- a/src/glint_driver.c
++++ b/src/glint_driver.c
+@@ -944,7 +944,9 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
+     if (FBDevProbed) {
+ 	int default_depth, fbbpp;
+ 	
+-	if (!fbdevHWInit(pScrn,NULL,xf86FindOptionValue(pGlint->pEnt->device->options,"fbdev"))) {
++	if (!fbdevHWInit(pScrn, pGlint->PciInfo,
++			 xf86FindOptionValue(pGlint->pEnt->device->options,
++					     "fbdev"))) {
+ 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "fbdevHWInit failed!\n");	
+ 		return FALSE;
+ 	}
+@@ -1076,7 +1078,9 @@ GLINTPreInit(ScrnInfoPtr pScrn, int flags)
+ 		return FALSE;
+ 	}
+ 
+-	if (!fbdevHWInit(pScrn,NULL,xf86FindOptionValue(pGlint->pEnt->device->options,"fbdev")))
++	if (!fbdevHWInit(pScrn, pGlint->PciInfo,
++			 xf86FindOptionValue(pGlint->pEnt->device->options,
++					     "fbdev")))
+ 	{
+ 		xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "fbdevHWInit failed!\n");
+ 		return FALSE;
+-- 
+1.9.3
+

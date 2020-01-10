@@ -2,54 +2,43 @@
 %define moduledir %(pkg-config xorg-server --variable=moduledir )
 %define driverdir	%{moduledir}/drivers
 
-# FIXME: DRI support for glint is more or less nonfunctional and unlikely to
-# ever be fixed.
-%define with_dri        0
-
 Summary:   Xorg X11 glint video driver
 Name:      xorg-x11-drv-glint
 Version:   1.2.8
-Release:   3%{?dist}
+Release:   10%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0:   ftp://ftp.x.org/pub/individual/driver/%{tarball}-%{version}.tar.bz2
-Source1:   glint.xinf
+Patch0: 0001-Remove-mibstore.h.patch
+Patch1: 0001-Pass-the-pci-device-through-to-fbdevHWInit.patch
 
 ExcludeArch: s390 s390x
 
 BuildRequires: xorg-x11-server-devel >= 1.10.99.902
-%if %{with_dri}
-BuildRequires: mesa-libGL-devel >= 6.4-4
-BuildRequires: libdrm-devel >= 2.0-1
-%endif
+BuildRequires: autoconf automake libtool
 
-Requires:  hwdata
-Requires:  Xorg %(xserver-sdk-abi-requires ansic)
-Requires:  Xorg %(xserver-sdk-abi-requires videodrv)
+Requires: Xorg %(xserver-sdk-abi-requires ansic)
+Requires: Xorg %(xserver-sdk-abi-requires videodrv)
 
 %description 
 X.Org X11 glint video driver.
 
 %prep
 %setup -q -n %{tarball}-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
-%configure --disable-static \
-%if ! %{with_dri}
-           --disable-dri
-%endif
+autoreconf -vif
+%configure --disable-static --disable-dri
 make
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 make install DESTDIR=$RPM_BUILD_ROOT
-
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/hwdata/videoaliases
-install -m 0644 %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/hwdata/videoaliases/
 
 # FIXME: Remove all libtool archives (*.la) from modules directory.  This
 # should be fixed in upstream Makefile.am or whatever.
@@ -61,24 +50,95 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %{driverdir}/glint_drv.so
-%{_datadir}/hwdata/videoaliases/glint.xinf
 %{_mandir}/man4/glint.4*
 
 %changelog
-* Tue Aug 29 2012 Jerome Glisse <jglisse@redhat.com> 1.2.8-3
-- upstream 1.2.8, Xorg rebase release Resolves: #835231
+* Mon Aug 11 2014 Adam Jackson <ajax@redhat.com> 1.2.8-10
+- Pass the PCI device through to fbdevhw if appropriate
 
-* Wed Aug 22 2012 airlied@redhat.com - 1.2.8-2
-- rebuild for server ABI requires
+* Mon Apr 28 2014 Adam Jackson <ajax@redhat.com> - 1.2.8-9
+- Fix rhel arch list
 
-* Mon Aug 06 2012 Jerome Glisse <jglisse@redhat.com> 1.2.8-1
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.8-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Thu Mar 07 2013 Dave Airlie <airlied@redhat.com> 1.2.8-7
+- autoreconf for aarch64
+
+* Thu Mar 07 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.8-6
+- ABI rebuild
+
+* Fri Feb 15 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.8-5
+- ABI rebuild
+
+* Fri Feb 15 2013 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.8-4
+- ABI rebuild
+
+* Thu Jan 10 2013 Adam Jackson <ajax@redhat.com> - 1.2.8-3
+- ABI rebuild
+
+* Sun Jul 22 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.8-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Wed Jul 18 2012 Dave Airlie <airlied@redhat.com> 1.2.8-1
 - latest upstream release 1.2.8
 
-* Tue Jun 28 2011 Ben Skeggs <bskeggs@redhat.com> 1.2.5-1
-- upstream release 1.2.5
+* Fri Apr 27 2012 Adam Jackson <ajax@redhat.com> 1.2.7-1
+- glint 1.2.7
 
-* Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 1.2.4-1.1
-- Rebuilt for RHEL 6
+* Thu Apr 05 2012 Adam Jackson <ajax@redhat.com> - 1.2.6-9
+- RHEL arch exclude updates
+
+* Sat Feb 11 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.6-8
+- ABI rebuild
+
+* Fri Feb 10 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.6-7
+- ABI rebuild
+
+* Tue Jan 24 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.6-6
+- ABI rebuild
+
+* Wed Jan 04 2012 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.6-5
+- Rebuild for server 1.12
+
+* Fri Dec 16 2011 Adam Jackson <ajax@redhat.com> - 1.2.6-4
+- Drop xinf file
+
+* Mon Nov 14 2011 Adam Jackson <ajax@redhat.com> - 1.2.6-3
+- ABI rebuild
+
+* Wed Nov 09 2011 ajax <ajax@redhat.com> - 1.2.6-2
+- ABI rebuild
+
+* Wed Sep 07 2011 Matěj Cepl <mcepl@redhat.com> - 1.2.6-1
+- New upstream release.
+
+* Thu Aug 18 2011 Adam Jackson <ajax@redhat.com> - 1.2.5-2
+- Rebuild for xserver 1.11 ABI
+
+* Tue Jun 21 2011 Adam Jackson <ajax@redhat.com> 1.2.5-1
+- glint 1.2.5
+
+* Wed May 11 2011 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.4-8
+- Rebuild for server 1.11
+
+* Mon Feb 28 2011 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.4-7
+- Rebuild for server 1.10
+
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.4-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Thu Dec 02 2010 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.4-5
+- Rebuild for server 1.10
+
+* Wed Oct 27 2010 Adam Jackson <ajax@redhat.com> 1.2.4-4
+- Add ABI requires magic. (#542742)
+
+* Mon Jul 05 2010 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.4-3
+- rebuild for X Server 1.9
+
+* Thu Jan 21 2010 Peter Hutterer <peter.hutterer@redhat.com> - 1.2.4-2
+- Rebuild for server 1.8
 
 * Tue Aug 04 2009 Dave Airlie <airlied@redhat.com> 1.2.4-1
 - glint 1.2.4
