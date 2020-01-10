@@ -5,7 +5,7 @@
 Summary:   Xorg X11 glint video driver
 Name:      xorg-x11-drv-glint
 Version:   1.2.8
-Release:   10%{?dist}
+Release:   11%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/glint.4*
 
 %changelog
+* Wed Nov 11 2015 Adam Jackson <ajax@redhat.com> - 1.2.8-11
+- Rebuild for server 1.17
+
 * Mon Aug 11 2014 Adam Jackson <ajax@redhat.com> 1.2.8-10
 - Pass the PCI device through to fbdevhw if appropriate
 
