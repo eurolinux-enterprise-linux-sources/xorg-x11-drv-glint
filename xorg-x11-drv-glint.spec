@@ -8,8 +8,8 @@
 
 Summary:   Xorg X11 glint video driver
 Name:      xorg-x11-drv-glint
-Version:   1.2.4
-Release:   1.1%{?dist}
+Version:   1.2.5
+Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
@@ -27,7 +27,8 @@ BuildRequires: libdrm-devel >= 2.0-1
 %endif
 
 Requires:  hwdata
-Requires:  xorg-x11-server-Xorg >= 1.6.0
+Requires:  Xorg %(xserver-sdk-abi-requires ansic)
+Requires:  Xorg %(xserver-sdk-abi-requires videodrv)
 
 %description 
 X.Org X11 glint video driver.
@@ -64,6 +65,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/glint.4*
 
 %changelog
+* Tue Jun 28 2011 Ben Skeggs <bskeggs@redhat.com> 1.2.5-1
+- upstream release 1.2.5
+
 * Mon Nov 30 2009 Dennis Gregorovic <dgregor@redhat.com> - 1.2.4-1.1
 - Rebuilt for RHEL 6
 
