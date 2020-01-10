@@ -22,7 +22,6 @@
  * Authors: Alan Hourihane, alanh@fairlite.demon.co.uk
  *          Sven Luther <luther@dpt-info.u-strasbg.fr>
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/glint/pm3_video.c,v 1.14tsi Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -31,7 +30,6 @@
 #include "xf86.h"
 #include "xf86_OSproc.h"
 #include "compiler.h"
-#include "xf86PciInfo.h"
 #include "xf86Pci.h"
 #include "xf86fbman.h"
 #include "regionstr.h"
@@ -40,8 +38,6 @@
 #include "glint_regs.h"
 #include "pm3_regs.h"
 #include <X11/extensions/Xv.h>
-#include "xaa.h"
-#include "xaalocal.h"
 #include "dixstruct.h"
 #include "fourcc.h"
 
@@ -75,7 +71,7 @@ static Atom xvColorKey, xvDoubleBuffer, xvAutopaintColorKey, xvFilter;
 
 void Permedia3InitVideo(ScreenPtr pScreen)
 {
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     XF86VideoAdaptorPtr *adaptors, *newAdaptors = NULL;
     XF86VideoAdaptorPtr newAdaptor = NULL;
     GLINTPtr pGlint = GLINTPTR(pScrn);
@@ -282,7 +278,7 @@ void Permedia3ResetVideo(ScrnInfoPtr pScrn)
 static XF86VideoAdaptorPtr 
 Permedia3SetupImageVideo(ScreenPtr pScreen)
 {
-    ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     GLINTPtr pGlint = GLINTPTR(pScrn);
     XF86VideoAdaptorPtr adapt;
     GLINTPortPrivPtr pPriv;
@@ -625,7 +621,7 @@ Permedia3AllocateMemory(ScrnInfoPtr pScrn, FBAreaPtr area, int width, int height
     xf86FreeOffscreenArea(area);
   }
 
-  pScreen = screenInfo.screens[pScrn->scrnIndex];
+  pScreen = xf86ScrnToScreen(pScrn);
 
   new_area = xf86AllocateOffscreenArea(pScreen, width, height, pScrn->bitsPerPixel / 8, NULL, NULL, NULL);
 

@@ -4,12 +4,12 @@
 
 # FIXME: DRI support for glint is more or less nonfunctional and unlikely to
 # ever be fixed.
-%define with_dri        1
+%define with_dri        0
 
 Summary:   Xorg X11 glint video driver
 Name:      xorg-x11-drv-glint
-Version:   1.2.5
-Release:   1%{?dist}
+Version:   1.2.8
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X Hardware Support
@@ -20,7 +20,7 @@ Source1:   glint.xinf
 
 ExcludeArch: s390 s390x
 
-BuildRequires: xorg-x11-server-devel >= 1.6.0
+BuildRequires: xorg-x11-server-devel >= 1.10.99.902
 %if %{with_dri}
 BuildRequires: mesa-libGL-devel >= 6.4-4
 BuildRequires: libdrm-devel >= 2.0-1
@@ -65,6 +65,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man4/glint.4*
 
 %changelog
+* Tue Aug 29 2012 Jerome Glisse <jglisse@redhat.com> 1.2.8-3
+- upstream 1.2.8, Xorg rebase release Resolves: #835231
+
+* Wed Aug 22 2012 airlied@redhat.com - 1.2.8-2
+- rebuild for server ABI requires
+
+* Mon Aug 06 2012 Jerome Glisse <jglisse@redhat.com> 1.2.8-1
+- latest upstream release 1.2.8
+
 * Tue Jun 28 2011 Ben Skeggs <bskeggs@redhat.com> 1.2.5-1
 - upstream release 1.2.5
 
